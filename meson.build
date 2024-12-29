@@ -66,6 +66,7 @@ xcb_icccm = dependency('xcb-icccm', required: get_option('xwayland'))
 drm_full = dependency('libdrm')
 drm = drm_full.partial_dependency(compile_args: true, includes: true)
 xml2 = dependency('libxml-2.0')
+gio = dependency('gio-2.0')
 glib = dependency('glib-2.0')
 cairo = dependency('cairo')
 pangocairo = dependency('pangocairo')
@@ -133,6 +134,7 @@ labwc_deps = [
   xkbcommon,
   xcb_icccm,
   xml2,
+  gio,
   glib,
   cairo,
   drm,

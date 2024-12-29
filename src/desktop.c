@@ -87,6 +87,8 @@ desktop_focus_view(struct view *view, bool raise)
 	if (raise) {
 		view_move_to_front(view);
 	}
+
+	dbus_emit_client_signal("WindowFocused", view);
 }
 
 /* TODO: focus layer-shell surfaces also? */

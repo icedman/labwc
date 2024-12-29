@@ -57,11 +57,15 @@ view_impl_map(struct view *view)
 	wlr_log(WLR_DEBUG, "[map] identifier=%s, title=%s",
 		view_get_string_prop(view, "app_id"),
 		view_get_string_prop(view, "title"));
+
+	dbus_emit_client_signal("WindowOpened", view);
 }
 
 void
 view_impl_unmap(struct view *view)
 {
+	dbus_emit_client_signal("WindowClosed", view);
+
 	struct server *server = view->server;
 	if (view == server->active_view) {
 		desktop_focus_topmost_view(server);

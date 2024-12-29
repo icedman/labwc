@@ -224,6 +224,8 @@ main(int argc, char *argv[])
 	};
 	wl_event_loop_add_idle(server.wl_event_loop, idle_callback, &idle_ctx);
 
+	dbus_service_init(&server);
+
 	wl_display_run(server.wl_display);
 
 	session_shutdown(&server);

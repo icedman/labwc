@@ -596,4 +596,9 @@ void create_constraint(struct wl_listener *listener, void *data);
 void constrain_cursor(struct server *server, struct wlr_pointer_constraint_v1
 	*constraint);
 
+int dbus_service_update(void *data);
+int dbus_service_init(struct server *server);
+void dbus_service_cleanup(void);
+void dbus_emit_client_signal(const char* signal, void *c);
+
 #endif /* LABWC_H */
