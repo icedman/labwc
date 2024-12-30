@@ -31,6 +31,14 @@ const gchar *introspection_xml =
 	"      <arg type='s' name='window' direction='in'/>"
 	"      <arg type='s' name='window' direction='out'/>"
 	"    </method>"
+	"    <method name='CloseWindow'>"
+	"      <arg type='s' name='window' direction='in'/>"
+	"      <arg type='s' name='window' direction='out'/>"
+	"    </method>"
+	"    <method name='QuitApp'>"
+	"      <arg type='s' name='appid' direction='in'/>"
+	"      <arg type='s' name='appid' direction='out'/>"
+	"    </method>"
 	"    <method name='GetWindows'>"
 	"      <arg type='s' name='windows' direction='out'/>"
 	"    </method>"
@@ -113,6 +121,8 @@ dbus_handle_method_call(GDBusConnection *connection, const gchar *sender,
 	const gchar *method_name, GVariant *parameters,
 	GDBusMethodInvocation *invocation, gpointer user_data)
 {
+	g_print("%s\n", method_name);
+	
 	if (g_strcmp0(method_name, "GetWindows") == 0) {
 		const char *response = "Hello from D-Bus!";
 		g_print("HelloWorld method called by %s\n", sender);
@@ -146,6 +156,39 @@ dbus_handle_method_call(GDBusConnection *connection, const gchar *sender,
 		g_dbus_method_invocation_return_value(
 			invocation, g_variant_new("(s)", window));
 		g_free(window);
+
+	} else if (g_strcmp0(method_name, "CloseWindow") == 0) {
+		const gchar *window;
+		g_variant_get(parameters, "(s)", &window);
+
+		uintptr_t address = strtol(window, NULL, 16); // Base 16 for
+
+		struct view *view = NULL;
+		wl_list_for_each(view, &dbus->server->views, link) {
+			if ((uintptr_t)view == address) {
+				view_close(view);
+			}
+		}
+		// g_print("focus %s\n", window);
+		g_dbus_method_invocation_return_value(
+			invocation, g_variant_new("(s)", window));
+		g_free(window);
+
+	} else if (g_strcmp0(method_name, "QuitApp") == 0) {
+		const gchar *appid;
+		g_variant_get(parameters, "(s)", &appid);
+
+		struct view *view = NULL;
+		wl_list_for_each(view, &dbus->server->views, link) {
+			const char *v_appid = view_get_string_prop(view, "app_id");
+			if (g_strcmp0(v_appid, appid) == 0) {
+				view_close(view);
+			}
+		}
+		// g_print("focus %s\n", appid);
+		g_dbus_method_invocation_return_value(
+			invocation, g_variant_new("(s)", appid));
+		g_free(appid);
 
 	} else {
 		g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
